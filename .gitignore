@@ -1,0 +1,9 @@
+.env
+server/node_modules
+server/dist
+server/public
+
+node_modules
+client/node_modules
+
+.idea
