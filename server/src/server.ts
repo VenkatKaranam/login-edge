@@ -1,21 +1,32 @@
-import express, {Express, Request, Response} from 'express';
-import dotenv from 'dotenv';
-import path from 'path'
+import dotenv from "dotenv";
 dotenv.config({path: '../.env'});
+
+import express, {Express, Request, Response} from 'express';
+import path from 'path'
+import apiRouter from "./router/api";
+import sequelize from "./config/database";
+import session from "express-session";
 
 const app :Express = express();
 
-app.post('/api/login', (req: Request, res: Response)=>{
-    console.log('reached')
-    res.status(200).json(
-        {
-            success: 'true',
-            message: 'running'
-        }
-    )
-});
+app.use(express.json());
 
-app.use(express.static(path.join(__dirname, '../public')))
+sequelize.sync()
+    .then(() => console.log('DB Connected'))
+    .catch((err)=> console.error('Failed to connect DB', err))
+
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || 'professor-from-money-heist',
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: 1000 * 60 * 60,
+        },
+    })
+)
+
+app.use(apiRouter)
 
 app.use((req:Request, res:Response) => {
     res.sendFile(path.join(__dirname, '../public', 'index.html'))

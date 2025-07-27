@@ -1,11 +1,11 @@
 import LoginForm from "../components/LoginForm.tsx";
 
-const Login = () => {
+const SignUp = () => {
     return (
         <div id={'login'} className={'login'}>
-            <LoginForm mode={'login'}/>
             <img className={'vector'} src='/vector.png' alt={'vector'}/>
+            <LoginForm mode={'signup'}/>
         </div>
     )
 }
-export default Login
+export default SignUp

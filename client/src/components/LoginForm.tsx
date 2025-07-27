@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useState} from "react";
 import axios from "axios";
 
@@ -7,13 +7,19 @@ type Field = {
     error: string
 }
 
-const LoginForm =() => {
+type FormProps = {
+    mode: 'login'| 'signup'
+}
+
+const LoginForm =({mode}:FormProps) => {
     const defaultFields:Field = {
         value:'',
         error: ''
     }
     const [email, setEmail] = useState<Field>(defaultFields)
     const [password, setPassword] = useState<Field>(defaultFields)
+    const [serverError, setServerError] = useState<string>('')
+    const navigate = useNavigate();
 
     const validatePassword:() => boolean = () =>{
         if (password.value.length <= 0){
@@ -21,7 +27,7 @@ const LoginForm =() => {
             return false;
         }
 
-        if (password.value.length > 15 || password.value.length < 6) {
+        if (mode === 'signup' && (password.value.length > 15 || password.value.length < 6)) {
             setPassword({...password, error: 'Should contains max 6-15 characters'})
             return false
         }
@@ -49,17 +55,30 @@ const LoginForm =() => {
     const handleSubmit = async (e:any) => {
         e.preventDefault()
 
+        setServerError('')
+
         if (!validateEmail() || !validatePassword()) {
             return
         }
 
-        const {data} = await axios.post('/api/login',
-            {
-            email,
-            password
-            },
-        )
-        console.log(data)
+        try{
+            const {data} = await axios.post(mode === 'login' ? '/api/login' : 'api/signup',
+                {
+                    email : email.value,
+                    password: password.value
+                },
+            )
+
+            if (!data.success) {
+                setServerError(data.message)
+                return
+            }
+            const redirectURL = mode === 'login' ? '/profile' : '/login';
+            navigate(redirectURL)
+        } catch (e) {
+            console.log(e)
+            setServerError("Something went wrong")
+        }
     }
 
     return (
@@ -68,6 +87,8 @@ const LoginForm =() => {
                 <h2 className={'message'}>Welcome Back!</h2>
                 <p className={'info'}>Please enter log in details below</p>
             </div>
+
+            {Boolean(serverError) ? <div className={'server-error'}>{serverError}</div> :<></>}
 
             <form className={'form'} onSubmit={handleSubmit}>
                 <div className={'inputs-group'}>
@@ -100,19 +121,29 @@ const LoginForm =() => {
                 </div>
 
                 <button type={'submit'} className={'submit-button'}>
-                    Sign in
+                    {mode === 'login' ? 'Sign in' : 'Sign up'}
                 </button>
 
             </form>
 
             {/*<div className={'horizontal-line'}></div>*/}
 
-            <div className={'signup'}>
-                <span>
-                    Don't have an account?
-                    <Link className={'signup-link'} to='/signup'>Signup</Link>
-                </span>
-            </div>
+            {mode === 'login'?
+                <div className={'signup'}>
+                    <span>
+                        Don't have an account?
+                        <Link className={'signup-link'} to='/signup'>Signup</Link>
+                    </span>
+                </div>
+                :
+                <div className={'login'}>
+                    <span>
+                        Already have an account?
+                        <Link className={'login-link'} to='/login'>Login</Link>
+                    </span>
+                </div>
+            }
+
         </div>
 
     )
