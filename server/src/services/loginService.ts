@@ -1,7 +1,7 @@
 import { CustomResponse, LoginValidation } from '../types/commonTypes';
 import { User } from '../models/user';
 import Ip from '../models/ip';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import { Request } from 'express';
 import { getClientIp } from '../utils/utils';
 import { validateEmailAndPassword } from '../utils/validation';

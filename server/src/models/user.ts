@@ -5,7 +5,7 @@ interface UserAttributes {
     id: number,
     name: string,
     email: string,
-    suspendedTill: Date,
+    suspendedTill?: Date,
     createdAt: Date,
     updatedAt: Date
 }
