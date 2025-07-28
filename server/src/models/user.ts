@@ -1,30 +1,39 @@
-import sequelize from "../config/database";
+import {Table, Column, Model, DataType, PrimaryKey, AutoIncrement, Default, AllowNull} from 'sequelize-typescript';
 import {DataTypes} from "sequelize";
 
-const User= sequelize.define('User', {
-    id : {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
-    
-    email:{
-        type: DataTypes.STRING,
-        unique: true,
-        allowNull: false,
-    },
+interface UserAttributes {
+    id: number,
+    name: string,
+    email: string,
+    suspendedTIll: Date,
+    createdAt: Date,
+    updatedAt: Date
+}
 
-    password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+interface UserCreationAttributes {
+    email: string,
+    password: string,
+    suspendedTIll?: Date,
+}
 
-    suspendedTill : {
-        type: DataTypes.DATE,
-        allowNull: true,
-    }
-}, {
-    tableName: 'users'
-});
+@Table({ tableName: 'users', timestamps: true })
+export class User extends Model<UserAttributes, UserCreationAttributes> {
+    @PrimaryKey
+    @AutoIncrement
+    @Column(DataType.INTEGER)
+    id!: number;
 
-export default User;
+
+    @AllowNull(false)
+    @Column({ type: DataType.STRING, unique: true })
+    email!: string;
+
+    @AllowNull(false)
+    @Column({ type: DataType.STRING})
+    password!: string;
+
+    @Default(null)
+    @AllowNull(true)
+    @Column(DataTypes.DATE)
+    suspendedTIll?: Date | null
+}

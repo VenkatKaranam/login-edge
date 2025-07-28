@@ -1,5 +1,5 @@
 import {CustomResponse, LoginValidation} from "../types/commonTypes";
-import User from "../models/user";
+import {User} from "../models/user";
 import {Op} from "sequelize";
 import UserLoginAttempt from "../models/userLoginAttempt";
 import Ip from "../models/ip";
@@ -29,7 +29,20 @@ export class LoginService{
             }
         }
 
-        const validation = await this.validateLogin(email, password, ip)
+
+        const [ipRecord] = await Ip.findOrCreate({
+            where: {ipAddress: ip}
+        });
+
+
+        const validation = await this.validateLogin(email, password, ipRecord)
+
+        await UserLoginAttempt.create({
+            userId: validation.user?.id,
+            ipId: ipRecord.id,
+            success: validation.success
+        })
+        
         if (!validation.success){
            return  {
                success: false,
@@ -39,8 +52,6 @@ export class LoginService{
 
         req.session.user = validation.user
 
-        console.log(req.session.user)
-
         return {
             success: true,
             message: 'Successfully login'
@@ -48,11 +59,16 @@ export class LoginService{
     }
 
 
-    public async validateLogin(email: string, password: string, ip: string): Promise<LoginValidation> {
+    public async validateLogin(email: string, password: string, ip: Ip): Promise<LoginValidation> {
         let response: LoginValidation = {
             success: false,
-            message: 'something went wrong',
-            user: undefined
+            message: 'Something went wrong!',
+        }
+
+        const isIpBlocked = await this.ipBlocked(ip);
+        if (isIpBlocked){
+            response.message = 'Ip temporarily blocked due to excessive failed login attempts.'
+            return response
         }
 
         const validation = this.validateEmailAndPassword(email, password);
@@ -69,23 +85,14 @@ export class LoginService{
 
         const userSuspension = await this.userSuspension(user)
         if (userSuspension){
-            response.message = 'Too many attempts'
-            return response
-        }
-
-        const isIpBlocked = await this.ipBlocked(ip);
-        console.log(isIpBlocked)
-        if (isIpBlocked){
-            response.message = 'Ip Blocked'
+            response.message = 'Account temporarily suspended due to too many failed attempts. '
             return response
         }
 
         const isValid = await bcrypt.compare(password, user.password)
 
-        await this.logLoginAttempt(user, ip, isValid)
-
         if (!isValid){
-            response.message = 'invalid credentials'
+            response.message = 'Provided invalid credentials'
             return response
         }
         response.success = true
@@ -98,11 +105,11 @@ export class LoginService{
         if (email.length <= 0 || password.length <= 0) {
             return {
                 success: false,
-                message: 'Missing requires fields'
+                message: 'Missing required fields'
             }
         }
 
-        const emailReg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const emailReg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!emailReg.test(email)){
             return {
                 success: false,
@@ -112,14 +119,13 @@ export class LoginService{
 
         return {
             success: true,
-            message: 'successfully validated'
+            message: 'Successfully validated'
         }
     }
 
     private async userSuspension(user:any): Promise<boolean> {
         const now = new Date();
         const fiveMinutesAgo = new Date(now.getTime() - (5 * 60 * 1000));
-        console.log(fiveMinutesAgo.toISOString())
 
         if (user.suspendedTill && user.suspendedTill >= now){
             return true;
@@ -135,34 +141,26 @@ export class LoginService{
             }}
         )
 
-        console.log(userAttempts)
         if (userAttempts.length > this.config.maxAttempts) {
             const fifteenMinutesLater = new Date(now.getTime() + (15 * 60 * 1000));
             await user.update({suspendedTill: fifteenMinutesLater})
             return true;
         }
 
-        console.log(userAttempts)
         return false
     }
 
-    private async ipBlocked(ipAddress: string): Promise<boolean>{
+    private async ipBlocked(ip: Ip): Promise<boolean>{
         const now = new Date();
-        const fiveMinutesAgo = new Date(now.getTime() - (5 * 60 * 1000));
+        const fiveMinutesAgo = new Date(now.getTime() - (this.config.windowMin * 60 * 1000));
 
-        const ip:any = await Ip.findOne({
-            where:{
-                ipAddress: ipAddress,
-            }
-        })
-
-        if (ip && ip.blockedTill >= now){
+        if (ip.blockedTill && ip.blockedTill >= now){
             return true
         }
 
         const userAttempts = await UserLoginAttempt.findAll({
             where: {
-                ip: ipAddress,
+                ipId: ip.id,
                 success: false,
                 createdAt:{
                     [Op.gte]: fiveMinutesAgo
@@ -170,27 +168,13 @@ export class LoginService{
             }}
         )
 
-        console.log(userAttempts.length)
-
         if (userAttempts.length > this.config.maxAttempts) {
-            const fifteenMinutesLater = new Date(now.getTime() + (15 * 60 * 1000));
-            if (ip) {
-                await ip.update({suspendedTill: fifteenMinutesLater})
-            } else {
-                await Ip.create({ipAddress:ipAddress, blockedTill:fifteenMinutesLater})
-            }
+            const fifteenMinutesLater = new Date(now.getTime() + (this.config.lockMin * 60 * 1000));
+            await ip.update({blockedTill: fifteenMinutesLater})
             return true;
         }
 
         return false
-    }
-
-    private async logLoginAttempt(user:any, ip: string, success: boolean){
-        await UserLoginAttempt.create({
-            userId: user.id,
-            ip: ip,
-            success: success
-        })
     }
 
 }

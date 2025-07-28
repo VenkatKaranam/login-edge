@@ -1,4 +1,6 @@
 import {Model} from "sequelize";
+import {User} from "../models/user";
+import Ip from "../models/ip";
 
 export interface CustomResponse {
     success: boolean
@@ -6,5 +8,5 @@ export interface CustomResponse {
 }
 
 export interface LoginValidation extends CustomResponse {
-    user: any
+    user?: User
 }

@@ -1,14 +1,16 @@
-import {Sequelize} from "sequelize";
+import {Sequelize} from "sequelize-typescript";
+import Ip from '../models/ip';
+import UserLoginAttempt from "../models/userLoginAttempt";
+import {User} from "../models/user";
 
-const sequelize =new Sequelize(
-    process.env.DB_NAME || '',
-    process.env.DB_USER || '',
-    process.env.DB_PASSWORD || '',
-    {
-        host: process.env.DB_HOST || '',
-        dialect: 'mysql',
-        port: Number(process.env.DB_PORT) || 3306,
-    }
-)
+const sequelize =new Sequelize({
+    dialect: 'mysql',
+    host: process.env.DB_HOST,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    models: [User, UserLoginAttempt,Ip,],
+    logging: false
+});
 
 export default sequelize;

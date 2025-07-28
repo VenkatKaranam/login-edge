@@ -1,4 +1,4 @@
-import User from "../models/user";
+import {User} from "../models/user";
 import bcrypt from 'bcryptjs'
 import {CustomResponse} from "../types/commonTypes";
 
@@ -16,7 +16,6 @@ export class SignupService{
         }
 
         const isAlreadyRegisteredUser = await this.isAlreadyRegisteredUser(email);
-        console.log(isAlreadyRegisteredUser)
         if (isAlreadyRegisteredUser){
             response.message = 'User with the email is already registered'
             return response
@@ -25,7 +24,7 @@ export class SignupService{
         const hashedPassword =await bcrypt.hash(password, 10)
         await User.create({
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
         })
 
        response.success = true
@@ -34,7 +33,7 @@ export class SignupService{
     }
 
     private async isAlreadyRegisteredUser(email: string): Promise<boolean> {
-       const user = await User.findOne({where: {email: email}})
+       const user: User|null = await User.findOne({where: {email: email}})
         return Boolean(user)
     }
 

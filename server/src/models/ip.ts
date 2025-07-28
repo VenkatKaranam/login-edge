@@ -1,24 +1,17 @@
-import sequelize from "../config/database";
-import {DataTypes} from "sequelize";
+import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, Unique, AllowNull } from 'sequelize-typescript';
 
-const Ip= sequelize.define('Ip', {
-    id : {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
+@Table({ tableName: 'ips' })
+export default class Ip extends Model<Ip> {
+    @PrimaryKey
+    @AutoIncrement
+    @Column(DataType.INTEGER)
+    id!: number;
 
-    ipAddress: {
-        type: DataTypes.STRING,
-        unique: true
-    },
+    @Unique
+    @Column(DataType.STRING)
+    ipAddress!: string;
 
-    blockedTill : {
-        type: DataTypes.DATE,
-        allowNull: true,
-    }
-}, {
-    tableName: 'ips'
-});
-
-export default Ip;
+    @AllowNull(true)
+    @Column(DataType.DATE)
+    blockedTill?: Date;
+}
