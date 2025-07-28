@@ -1,10 +1,10 @@
-import LoginForm from "../components/LoginForm.tsx";
+import Form from "../components/Form.tsx";
 
 const SignUp = () => {
     return (
-        <div id={'login'} className={'login'}>
+        <div id={'signup'} className={'signup'}>
             <img className={'vector'} src='/vector.png' alt={'vector'}/>
-            <LoginForm mode={'signup'}/>
+            <Form mode={'signup'}/>
         </div>
     )
 }

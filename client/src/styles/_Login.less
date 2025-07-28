@@ -1,0 +1,48 @@
+@import "_LoginForm.less";
+
+#login, #signup {
+  max-width: 1224px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh;
+
+  .logo{
+    position: absolute;
+    top: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    @media @max1255 {
+      left: 50%;
+      right: 50%;
+    }
+
+    img {
+      width: 24px;
+    }
+
+    .title{
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+  }
+
+  @media @max1255 {
+    margin-right: 16px;
+    margin-left: 16px;
+  }
+
+  .vector {
+    height: 100vh;
+    display: block;
+
+    @media @max1255 {
+      display: none;
+    }
+  }
+}

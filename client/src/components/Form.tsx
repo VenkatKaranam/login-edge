@@ -11,7 +11,7 @@ type FormProps = {
     mode: 'login'| 'signup'
 }
 
-const LoginForm =({mode}:FormProps) => {
+const Form =({mode}:FormProps) => {
     const defaultFields:Field = {
         value:'',
         error: ''
@@ -19,6 +19,7 @@ const LoginForm =({mode}:FormProps) => {
     const [email, setEmail] = useState<Field>(defaultFields)
     const [password, setPassword] = useState<Field>(defaultFields)
     const [serverError, setServerError] = useState<string>('')
+    const [successMessage, setSuccessMessage] = useState<string>('')
     const navigate = useNavigate();
 
     const validatePassword:() => boolean = () =>{
@@ -56,6 +57,7 @@ const LoginForm =({mode}:FormProps) => {
         e.preventDefault()
 
         setServerError('')
+        setSuccessMessage('')
 
         if (!validateEmail() || !validatePassword()) {
             return
@@ -73,10 +75,13 @@ const LoginForm =({mode}:FormProps) => {
                 setServerError(data.message)
                 return
             }
-            const redirectURL = mode === 'login' ? '/profile' : '/login';
-            navigate(redirectURL)
+
+            if (mode === 'login'){
+                navigate('/profile')
+            } else {
+                setSuccessMessage(data.message)
+            }
         } catch (e) {
-            console.log(e)
             setServerError("Something went wrong")
         }
     }
@@ -84,11 +89,15 @@ const LoginForm =({mode}:FormProps) => {
     return (
         <div id={'login-form-container'}>
             <div className={'greeting'}>
-                <h2 className={'message'}>Welcome Back!</h2>
-                <p className={'info'}>Please enter log in details below</p>
+                <h2 className={'message'}>{
+                   mode === 'login' ? 'Welcome Back!' : "Hi there! We're glad you're here."
+                }</h2>
+                <p className={'info'}>Please enter the details below</p>
             </div>
 
-            {Boolean(serverError) ? <div className={'server-error'}>{serverError}</div> :<></>}
+            {Boolean(serverError) ? <div className={'message-alert error'}>{serverError}</div> :<></>}
+
+            {Boolean(successMessage) ? <div className={'message-alert success'}>{successMessage} <Link to={'/login'}>Login Now</Link></div> : <></>}
 
             <form className={'form'} onSubmit={handleSubmit}>
                 <div className={'inputs-group'}>
@@ -126,26 +135,30 @@ const LoginForm =({mode}:FormProps) => {
 
             </form>
 
-            {/*<div className={'horizontal-line'}></div>*/}
+            <div className={'division'}>
+                <div className={'horizontal-line'}></div>
+                <span className={'message'}>OR</span>
+                <div className={'horizontal-line'}></div>
+            </div>
+            <div className={'horizontal-line'}></div>
 
             {mode === 'login'?
                 <div className={'signup'}>
                     <span>
                         Don't have an account?
-                        <Link className={'signup-link'} to='/signup'>Signup</Link>
                     </span>
+                    <Link className={'signup-link'} to='/signup'>Signup</Link>
                 </div>
                 :
                 <div className={'login'}>
                     <span>
                         Already have an account?
-                        <Link className={'login-link'} to='/login'>Login</Link>
                     </span>
+                    <Link className={'login-link'} to='/login'>Login</Link>
                 </div>
             }
-
         </div>
 
     )
 }
-export default LoginForm;
+export default Form;
