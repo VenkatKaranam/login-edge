@@ -1,5 +1,6 @@
 import Form from "../components/Form.tsx";
 import logo from "../assets/logo.png"
+import vector from "../assets/vector.png"
 
 const Login = () => {
     return (
@@ -9,7 +10,7 @@ const Login = () => {
                 <span className='title'>LoginEdge</span>
             </div>
             <Form mode={'login'}/>
-            <img className={'vector'} src='/vector.png' alt={'vector'}/>
+            <img className={'vector'} src={vector} alt={'vector'}/>
         </div>
     )
 }

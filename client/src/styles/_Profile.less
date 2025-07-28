@@ -1,0 +1,43 @@
+#profile {
+  max-width: 1224px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @media @max575 {
+    margin-right: 16px;
+    margin-left: 16px;
+  }
+
+  .message{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+
+    .user-name{
+      font-weight: 700;
+      font-size: 24px;
+      color: #00a5ec;
+    }
+
+    .login{
+      padding: 12px 24px;
+      box-sizing: border-box;
+      background: #151314;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 20px;
+      color: #dfe1e1;
+      width: 100%;
+      cursor: pointer;
+    }
+  }
+
+}
