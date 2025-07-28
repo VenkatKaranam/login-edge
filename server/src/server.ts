@@ -11,6 +11,8 @@ const app :Express = express();
 
 app.use(express.json());
 
+app.use(express.static(path.join(__dirname, '../public')))
+
 sequelize.sync()
     .then(() => console.log('DB Connected'))
     .catch((err)=> console.error('Failed to connect DB', err))
@@ -32,7 +34,7 @@ app.use((req:Request, res:Response) => {
     res.sendFile(path.join(__dirname, '../public', 'index.html'))
 });
 
-const PORT:string = process.env.NODE_SERVER_PORT || '3000';
+const PORT:string = process.env.PORT || '3000';
 app.listen(PORT, ()=> {
     console.log(`Server started as port ${PORT}`);
 })
