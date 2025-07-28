@@ -1,0 +1,5 @@
+export const AUTH_CONFIG = {
+  MAX_ATTEMPTS: 5,
+  WINDOW_MINUTES: 5,
+  LOCK_MINUTES: 15
+};

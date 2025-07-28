@@ -5,7 +5,7 @@ interface UserAttributes {
     id: number,
     name: string,
     email: string,
-    suspendedTIll: Date,
+    suspendedTill: Date,
     createdAt: Date,
     updatedAt: Date
 }
@@ -13,7 +13,7 @@ interface UserAttributes {
 interface UserCreationAttributes {
     email: string,
     password: string,
-    suspendedTIll?: Date,
+    suspendedTill?: Date,
 }
 
 @Table({ tableName: 'users', timestamps: true })
@@ -35,5 +35,5 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
     @Default(null)
     @AllowNull(true)
     @Column(DataTypes.DATE)
-    suspendedTIll?: Date | null
+    suspendedTill?: Date | null
 }
