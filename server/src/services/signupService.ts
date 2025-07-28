@@ -1,5 +1,5 @@
 import {User} from "../models/user";
-import bcrypt from 'bcryptjs'
+import { hash } from 'bcrypt'
 import {CustomResponse} from "../types/commonTypes";
 import {validateEmailAndPasswordWithLengths} from "../utils/validation";
 
@@ -22,7 +22,7 @@ export class SignupService{
             return response
         }
 
-        const hashedPassword =await bcrypt.hash(password, 10)
+        const hashedPassword =await hash(password, 10)
         await User.create({
             email: email,
             password: hashedPassword,

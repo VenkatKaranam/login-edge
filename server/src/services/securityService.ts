@@ -33,7 +33,7 @@ export class SecurityService {
     });
 
     // Block IP if too many failed attempts
-    if (failedAttempts.length > AUTH_CONFIG.MAX_ATTEMPTS) {
+    if (failedAttempts.length >= AUTH_CONFIG.MAX_IP_ATTEMPTS) {
       const blockUntil = getDateMinutesLater(AUTH_CONFIG.LOCK_MINUTES);
       await ip.update({ blockedTill: blockUntil });
       return true
@@ -67,7 +67,7 @@ export class SecurityService {
     });
 
     // Suspend user if too many failed attempts
-    if (failedAttempts.length > AUTH_CONFIG.MAX_ATTEMPTS) {
+    if (failedAttempts.length >= AUTH_CONFIG.MAX_USER_ATTEMPTS) {
       const suspendUntil = getDateMinutesLater(AUTH_CONFIG.LOCK_MINUTES);
       await user.update({ suspendedTill: suspendUntil });
       return true;

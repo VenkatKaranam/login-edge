@@ -79,6 +79,8 @@ const Form =({mode}:FormProps) => {
             if (mode === 'login'){
                 navigate('/profile')
             } else {
+                setEmail(defaultFields)
+                setPassword(defaultFields)
                 setSuccessMessage(data.message)
             }
         } catch (e) {

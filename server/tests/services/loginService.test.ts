@@ -3,7 +3,7 @@ import {SecurityService} from '../../src/services/securityService';
 import {User} from '../../src/models/user';
 import Ip from '../../src/models/ip';
 import {Request} from 'express';
-import bcrypt from 'bcrypt';
+import {compare} from 'bcrypt';
 import * as utils from '../../src/utils/utils';
 import * as validation from '../../src/utils/validation';
 
@@ -75,7 +75,7 @@ describe('LoginService', () => {
         mockSecurityService.recordLoginAttempt = jest.fn().mockResolvedValue(undefined);
 
         // Setup bcrypt
-        (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+        (compare as jest.Mock).mockResolvedValue(true);
 
         // Create login service
         loginService = new LoginService();
@@ -138,7 +138,7 @@ describe('LoginService', () => {
         it('should return error when password is incorrect', async () => {
             // Setup
             (User.findOne as jest.Mock).mockResolvedValue(mockUser);
-            (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+            (compare as jest.Mock).mockResolvedValue(false);
 
             // Execute
             const result = await loginService.validateLogin('test@example.com', 'wrongpassword', mockIp as Ip);
