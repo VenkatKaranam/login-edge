@@ -37,7 +37,7 @@ A brute force protected full-stack authentication application built with React a
 
    This command installs all the necessary dependencies for **both the client and server** in the respective folders.
    ```bash
-   npm install:all
+   npm run install:all
    ```
 
 4. **Setup MySQL database**

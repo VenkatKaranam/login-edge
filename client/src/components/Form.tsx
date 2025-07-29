@@ -84,6 +84,7 @@ const Form =({mode}:FormProps) => {
                 setSuccessMessage(data.message)
             }
         } catch (e) {
+            console.error(e)
             setServerError("Something went wrong")
         }
     }
