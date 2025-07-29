@@ -12,6 +12,11 @@ a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
+
+  &:hover{
+    color: #4048bd;
+    transition: color 0.5s;
+  }
 }
 
 a:hover {

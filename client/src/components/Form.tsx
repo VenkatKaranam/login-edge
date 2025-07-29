@@ -90,16 +90,17 @@ const Form =({mode}:FormProps) => {
 
     return (
         <div id={'login-form-container'}>
+
+            {Boolean(serverError) ? <div className={'message-alert error'}>{serverError}</div> :<></>}
+
+            {Boolean(successMessage) ? <div className={'message-alert success'}>{successMessage} <Link to={'/login'}>Login Now</Link></div> : <></>}
+
             <div className={'greeting'}>
                 <h2 className={'message'}>{
                    mode === 'login' ? 'Welcome Back!' : "Hi there! We're glad you're here."
                 }</h2>
                 <p className={'info'}>Please enter the details below</p>
             </div>
-
-            {Boolean(serverError) ? <div className={'message-alert error'}>{serverError}</div> :<></>}
-
-            {Boolean(successMessage) ? <div className={'message-alert success'}>{successMessage} <Link to={'/login'}>Login Now</Link></div> : <></>}
 
             <form className={'form'} onSubmit={handleSubmit}>
                 <div className={'inputs-group'}>
@@ -149,14 +150,14 @@ const Form =({mode}:FormProps) => {
                     <span>
                         Don't have an account?
                     </span>
-                    <Link className={'signup-link'} to='/signup'>Signup</Link>
+                    <Link className={'signup-link'} to='/signup'>Sign up</Link>
                 </div>
                 :
                 <div className={'login'}>
                     <span>
                         Already have an account?
                     </span>
-                    <Link className={'login-link'} to='/login'>Login</Link>
+                    <Link className={'login-link'} to='/login'>Sign in</Link>
                 </div>
             }
         </div>
