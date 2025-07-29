@@ -13,9 +13,6 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, '../public')))
 
-console.log('Connecting to MySQL at host:', process.env.DB_HOST);
-console.log('process.env.ENVIRONMENT', process.env.ENVIRONMENT);
-
 sequelize.sync()
     .then(() => console.log('DB Connected'))
     .catch((err)=> console.error('Failed to connect DB', err))

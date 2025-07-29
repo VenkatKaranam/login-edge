@@ -50,8 +50,9 @@ A brute force protected full-stack authentication application built with React a
    ```bash
    npm run dev
    ```
-   - The client will start on port 5173 with API proxy configured to backend server port
+   - The client will start on port 5173 with API proxy configured to backend server port 3000
    - The server will start on port 3000 (or the port specified in your `.env` file)
+   - During development, if you modify the server port, ensure the proxy port is updated accordingly in `client/vite.config.ts`.
 
  check http://localhost:5173/
 
