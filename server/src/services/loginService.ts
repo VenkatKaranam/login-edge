@@ -77,6 +77,8 @@ export class LoginService {
         return response;
       }
 
+      response.user = user;
+
       const isUserSuspended = await this.securityService.isUserSuspended(user);
       if (isUserSuspended) {
         response.message = 'Account temporarily suspended due to too many failed attempts.';
@@ -91,7 +93,6 @@ export class LoginService {
 
       response.success = true;
       response.message = 'Successfully logged in';
-      response.user = user;
 
       return response;
     } catch (error) {
