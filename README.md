@@ -5,6 +5,10 @@
 
 A brute force protected full-stack authentication application built with React and Node.js, featuring advanced security measures including rate limiting, IP blocking, and user account suspension.
 
+👉 [Check Hosted Site](https://login-edge.rka.li/)
+
+👉 [Documentation](https://deepwiki.com/VenkatKaranam/login-edge)
+
 ## Setup Instructions
 
 ### Prerequisites
@@ -42,7 +46,7 @@ A brute force protected full-stack authentication application built with React a
 
 4. **Setup MySQL database**
     - Create a MySQL database with the name specified in your `.env` file
-    - The application will automatically sync database models on startup
+    - The application will automatically sync database tables on startup
     - If you encounter issues with database schema auto-sync, drop the existing tables and manually import the schema from `database-schema.sql`.
 ### Development
 
@@ -184,6 +188,42 @@ The application uses server-side sessions for security:
 - **Secure session handling**: Production-ready session configuration
 - **Memory-efficient**: Session cleanup and management
 - **Bcrypt for Password Hashing**:Ensuring secure storage of user passwords by hashing them before saving to the database.
+
+## Database ER Diagram
+
+Here's the complete ER diagram for the LoginEdge database schema:
+
+```mermaid
+erDiagram
+    User {
+        integer id PK "AUTO_INCREMENT"
+        string email UK "UNIQUE, NOT NULL"
+        string password "NOT NULL, bcrypt hashed"
+        date suspendedTill "NULLABLE, suspension end date"
+        date createdAt "AUTO, timestamp"
+        date updatedAt "AUTO, timestamp"
+    }
+    
+    Ip {
+        integer id PK "AUTO_INCREMENT"
+        string ipAddress UK "UNIQUE, NOT NULL"
+        date blockedTill "NULLABLE, block end date"
+        date createdAt "AUTO, timestamp"
+        date updatedAt "AUTO, timestamp"
+    }
+    
+    UserLoginAttempt {
+        integer id PK "AUTO_INCREMENT"
+        integer userId FK "NULLABLE, references User.id"
+        integer ipId FK "NOT NULL, references Ip.id"
+        boolean success "NOT NULL, login attempt result"
+        date createdAt "AUTO, timestamp"
+        date updatedAt "AUTO, timestamp"
+    }
+    
+    User ||--o{ UserLoginAttempt : "has_login_attempts"
+    Ip ||--|| UserLoginAttempt : "from_ip_address"
+```
 
 
 ## Notes
