@@ -6,4 +6,6 @@ server/public
 node_modules
 client/node_modules
 
+
+server/tests/coverage
 .idea
